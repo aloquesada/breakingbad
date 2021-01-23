@@ -1,7 +1,7 @@
 import { Component } from "react";
-import { getCharacters } from "../config/request";
 import axios from "axios";
-
+import CharacterCard from "./CharacterCard";
+import { UilUserSquare } from '@iconscout/react-unicons';
 const url = "https://www.breakingbadapi.com/api/characters?limit=6&offset="
 
 class Characters extends Component {
@@ -16,7 +16,7 @@ class Characters extends Component {
     /**
      * Fetch characters
      */
-    fetchCaracters = () => {
+    fetchCharacters = () => {
         const charUrl = `${url}${this.state.page * 6}`;
         axios.get(charUrl)
             .then(response => {
@@ -41,21 +41,59 @@ class Characters extends Component {
                 ...state, 
                 page: state.page + 1}
         }, 
-        this.fetchCaracters)
+        this.fetchCharacters)
+    }
+
+    /**
+     * Sort characters for param
+     */
+    sortCharacters = param => {
+        const { characters } = this.state
+        let sorted;
+        if (param === "birthday"){
+            sorted = characters.sort((a, b) => {
+                if (a.birthday !== "Unknown" && b.birthday !== "Unknown") {
+                    const birthA = new Date(a.birthday);
+                    const birthB = new Date(b.birthday);
+                    return birthA - birthB;
+                } else if (a.birthday !== "Unknown" && b.birthday === "Unknown") {
+                    return -1;
+                } else if (a.birthday === "Unknown" && b.birthday !== "Unknown") {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+        } else {
+            sorted = characters.sort((a, b) => (a[param] > b[param]) ? 1 : ((b[param] > a[param]) ? -1 : 0));
+        }
+        this.setState(state => {
+            return {
+                ...state, 
+                characters: sorted}
+        });
     }
 
     componentDidMount() {
-       this.fetchCaracters();
+       this.fetchCharacters();
     }
 
     render() {
         const { characters } = this.state;
+        const sortBtns = ["name", "birthday", "portrayed"];
         return (
             <div>
-                {(characters && characters.length > 0 )&&
-                    characters.map((c) => <p key={c.char_id}>{c.name}</p>)
-                }
-                <button onClick={this.loadMore}>Load More</button>
+                <h2><UilUserSquare />Characters</h2>
+                <div className="SortingButtons">
+                    Sort by:
+                    {sortBtns.map((item, idx) =>
+                        <button className="Button" onClick={() => {this.sortCharacters(item)}} key={idx}>{item}</button>
+                    )}
+                </div>
+                <div className="CharactersContainer">
+                    {characters && characters.map(c => <CharacterCard character={c} key={c.char_id} />)}
+                </div>
+                <button className="Button LoadMore" onClick={this.loadMore}>Get More</button>
             </div>
         )
     }
