@@ -15,4 +15,4 @@ const DeathCard = (props) => {
     );
   };
   
-  export default DeathCard;
+export default DeathCard;

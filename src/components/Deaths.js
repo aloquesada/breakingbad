@@ -2,7 +2,7 @@ import { Component } from "react";
 import axios from "axios";
 import DeathCard from "./DeathCard";
 import { UilCrosshair } from '@iconscout/react-unicons';
-const url = "https://www.breakingbadapi.com/api/deaths?limit=5";
+const url = "https://www.breakingbadapi.com/api/deaths";
 
 class Deaths extends Component {
     constructor(props) {
@@ -44,7 +44,7 @@ class Deaths extends Component {
                 <h5>Total deaths: {totalDeaths}</h5>
                 <h2><UilCrosshair /> Deaths</h2>
                 <div className="DeathsContainer">
-                    {deaths && deaths.map(d => <DeathCard death={d} key={d.id} />)}
+                    {deaths && deaths.map(d => <DeathCard death={d} key={d.death_id} />)}
                 </div>
             </div>
         )
